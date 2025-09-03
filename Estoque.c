@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sqlite3.h>
+//#include <locale.h>
 
-#define MAX_PRODUTOS 100
-#define ARQUIVO "estoque.txt"
+#define ARQUIVO_BANCO "estoque.db" // arquivo de banco de dados
 
 typedef struct {
     int codigo;
@@ -12,10 +13,11 @@ typedef struct {
     float preco;
 } Produto;
 
-Produto estoque[MAX_PRODUTOS];
-int totalProdutos = 0;
+//DECLARAÇÃO DE VARIÁVEL GLOBAL PARA CONEXÃO COM O DB
+sqlite3 *db;
+char #err_msg = 0;
 
-// Funções do sistema
+// Protótipo das funções do sistema
 void carregarEstoque();
 void salvarEstoque();
 void cadastrarProduto();
@@ -25,7 +27,16 @@ void atualizarEstoque();
 void excluirProduto();
 void menu();
 
+//Callback para listar produtos  (usado na função listarProdutos)
+//Esta função é chamada pelo SQLite para cada linha resultante de um SELECT
+int callback_listar(void *NotUsed, int argc, char **argv, char **azColName) {
+    NotUsed = 0;
+    // argv[0] é o código, [1] é o nome, [2] é a quantidade, [3] é o preço
+    printf("Código %s | Nome: %s | Quantidade %s | Preço: R$%s \n",
+    argv[0], argv[1], argv[2], argv[3] );
+ }
 int main() {
+    //setlocale(LC_ALL, "pt_BR.UTF-8");
     carregarEstoque();
     menu();
     return 0;
