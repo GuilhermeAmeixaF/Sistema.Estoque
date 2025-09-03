@@ -27,7 +27,7 @@ void atualizarEstoque();
 void excluirProduto();
 void menu();
 
-//Callback para listar produtos  (usado na função listarProdutos)
+//Callback para listar produtos  (usado na função listarProdutos)s
 //Esta função é chamada pelo SQLite para cada linha resultante de um SELECT
 int callback_listar(void *NotUsed, int argc, char **argv, char **azColName) {
     NotUsed = 0;
@@ -36,9 +36,15 @@ int callback_listar(void *NotUsed, int argc, char **argv, char **azColName) {
     argv[0], argv[1], argv[2], argv[3] );
  }
 int main() {
-    //setlocale(LC_ALL, "pt_BR.UTF-8");
-    carregarEstoque();
+    int rc;
+
+    //inicializa o banco de dados antes de carregar o arquivo texto
+    inicializarBanco();
+
     menu();
+
+    //FECHA CONEXÃO COM O BANCO DE DADOS AO SAIR DO PROGRAMA
+    sqlite3_close(db);
     return 0;
 }
 
